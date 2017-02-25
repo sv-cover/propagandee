@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="mobileoptimized" content="0">
+        <title><?= $title ?> &mdash; PubliciTee Cover</title>
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" type="text/css">
+        <link rel="stylesheet" href="//cdl.svcover.nl/dist/v0.1/css/cdl.css" type="text/css">
+        <link rel="stylesheet" href="/static/css/bootstrap-datetimepicker.min.css">
+        <link rel="stylesheet" href="/static/css/publicitee.css">
+    </head>
+    <body>
+        <nav class="navbar navbar-cover">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-logo" href="//www.svcover.nl/"><img src="//cdl.svcover.nl/dist/v0.1/img/cover.png" alt="Cover"></a>
+                    <a class="navbar-brand" href="/">PubliciTee</a>
+                </div>
+                <!-- Toggleable content -->
+                <div class="collapse navbar-collapse" id="navbar-demo-collapse">
+                    <ul class="navbar-right">
+                        <li><a href="/">Request</a></li>
+                        <li><a href="/archive.php">Archive</a></li>
+                        <!-- Dropdown menu -->
+                        <li class="dropdown">
+                            <a href="#"  class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-angle-down"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-header">Dropdown links</li>
+                                <li><a href="#">Link</a></li>
+                                <li><a href="#">Link</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li class="dropdown-header">Separated links</li>
+                                <li><a href="#">Link</a></li>
+                                <li><a href="#">Link</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container container-narrow">
+            <?= $content ?>
+        </div>
+    </body>
+</html>

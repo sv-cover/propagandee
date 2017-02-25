@@ -1,0 +1,21 @@
+.form-group{
+    position: relative;
+}
+
+.error-message{
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-weight: normal;
+    color: red;
+}
+
+.error .error-message{
+    display: inline-block;
+}
+
+textarea{
+    min-height: 5em;
+    resize: vertical;
+}
