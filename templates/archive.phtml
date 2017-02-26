@@ -1,0 +1,11 @@
+<ul class="nav nav-pills">
+    <?php foreach ($index as $folder): ?>
+        <li role="presentation"><a href="?path=<?= $folder ?>"><?= $folder ?></a></li>
+    <?php endforeach ?>
+</ul>
+
+<ul>
+    <?php foreach ($posters as $poster): ?>
+        <li><?= var_dump($poster); ?></li>
+    <?php endforeach ?>
+</ul>
