@@ -1,11 +1,20 @@
 <ul class="nav nav-pills">
     <?php foreach ($index as $folder): ?>
-        <li role="presentation"><a href="?path=<?= $folder ?>"><?= $folder ?></a></li>
+        <li role="presentation"><a href="?path=<?= urlencode($folder['path']) ?>"><?= $folder['name'] ?></a></li>
     <?php endforeach ?>
 </ul>
 
 <ul>
-    <?php foreach ($posters as $poster): ?>
-        <li><?= var_dump($poster); ?></li>
+    <?php foreach ($posters as $item): ?>
+        <?php if ($item['type'] === 'file'): ?>
+            <li>
+                <a href="?poster=<?= urlencode($item['path']) ?>" target="_blank">
+                    <img src="?poster=<?= urlencode($item['path']) ?>&view=thumbnail" alt="<?= $item['path'] ?>">
+                    <?= $item['name'] ?>
+                </a>
+            </li>
+        <?php else: ?>
+            <li><a href="?path=<?= urlencode($item['path']) ?>"><?= $item['path'] ?></a></li>
+        <?php endif ?>
     <?php endforeach ?>
 </ul>

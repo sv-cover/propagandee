@@ -5,7 +5,11 @@ class ArchiveView extends TemplateView
 {
     public function run() {
         if (!empty($_GET['poster'])) {
-            // get poster or thumbnail!
+            $poster = new CachedPoster($_GET['poster']);
+            if (!empty($_GET['view']) && $_GET['view'] === 'thumbnail') 
+                $poster->get_thumbnail();
+            else
+                $poster->get_raw();
         } else {
             if (!empty($_GET['path']) && $_GET['path'] !== '/')
                 $this->path = fsencode_path($_GET['path']);
@@ -21,22 +25,32 @@ class ArchiveView extends TemplateView
         foreach (glob($dir.'*') as $item){
             $output[] = array(
                 'type' => is_dir($item) ? 'dir' : 'file',
-                'name' => urlencode_path($item)
+                'path' => urlencode_path($item),
+                'name' => pathinfo($item)['filename']
             );
         }
         return $output;
     }
 
     protected function get_index() {
-        return array_reverse(glob(ARCHIVE_ROOT . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR));
+        $dirs = glob(ARCHIVE_ROOT . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        $output = array();
+        foreach (array_reverse($dirs) as $item){
+            $output[] = array(
+                'path' => urlencode_path($item),
+                'name' => pathinfo($item)['filename']
+            );
+        }
+        return $output;
     }
 
     protected function get_current_folder() {
-        return $this->get_index()[0];
+        $dir = glob(ARCHIVE_ROOT . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        return end($dir);
     }
 
     protected function render_content() {
-        $index = array_map('urlencode_path', $this->get_index());
+        $index = $this->get_index();
         $posters = $this->list_folder($this->path);
         return $this->render_template('templates/archive.phtml', compact('index', 'posters'));
     }
