@@ -1,20 +1,27 @@
-<ul class="nav nav-pills">
-    <?php foreach ($index as $folder): ?>
-        <li role="presentation"><a href="?path=<?= urlencode($folder['path']) ?>"><?= $folder['name'] ?></a></li>
-    <?php endforeach ?>
-</ul>
+<div class="container">
+    <ul class="nav nav-pills">
+        <?php foreach ($index as $folder): ?>
+            <li role="presentation"><a href="?path=<?= urlencode($folder['path']) ?>"><?= $folder['name'] ?></a></li>
+        <?php endforeach ?>
+    </ul>
 
-<ul>
-    <?php foreach ($posters as $item): ?>
-        <?php if ($item['type'] === 'file'): ?>
-            <li>
-                <a href="?poster=<?= urlencode($item['path']) ?>" target="_blank">
-                    <img src="?poster=<?= urlencode($item['path']) ?>&view=thumbnail" alt="<?= $item['path'] ?>">
-                    <?= $item['name'] ?>
-                </a>
-            </li>
-        <?php else: ?>
-            <li><a href="?path=<?= urlencode($item['path']) ?>"><?= $item['path'] ?></a></li>
-        <?php endif ?>
-    <?php endforeach ?>
-</ul>
+    <ul class="list-unstyled archive">
+        <?php foreach ($posters as $item): ?>
+            <?php if ($item['type'] === 'file'): ?>
+                <li>
+                    <a href="?poster=<?= urlencode($item['path']) ?>" target="_blank" class="poster">
+                        <img src="?poster=<?= urlencode($item['path']) ?>&view=thumbnail" alt=".<?= $item['extension'] ?>-file">
+                        <span class="name"><?= $item['filename'] ?></span>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li>
+                    <a href="?path=<?= urlencode($item['path']) ?>" class="folder">
+                        <span class="icon"><i class="fa fa-folder-open-o" aria-hidden="true"></i></span>
+                        <span class="name"><?= $item['basename'] ?></span>                        
+                    </a>
+                </li>
+            <?php endif ?>
+        <?php endforeach ?>
+    </ul>
+</div>

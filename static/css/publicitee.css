@@ -19,3 +19,80 @@ textarea{
     min-height: 5em;
     resize: vertical;
 }
+
+ul.archive{
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-start;
+    margin: 0 -0.5rem;
+}
+
+ul.archive > li {
+    flex-shrink: 1;
+    flex-grow: 1;
+    flex-basis: 100%;
+    margin: 1rem 0.5rem;
+}
+
+ul.archive > li > a.folder,
+ul.archive > li > a.poster{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+}
+
+ul.archive > li > a.poster > img{
+    width: 100%;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ddd;
+    background: #eee;
+    color: #333;
+}
+
+ul.archive > li > a.folder > .icon{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    margin-bottom: 0.5rem;
+    font-size: 5em;
+    padding: 2rem;
+}
+
+ul.archive > li > a.folder:hover > .icon > i.fa::before,
+ul.archive > li > a.folder:focus > .icon > i.fa::before{
+    display: inline-block;
+    text-decoration: none;
+}
+
+
+@media (min-width: 400px) {
+    ul.archive > li {
+        flex-basis: calc( 50% - 1rem);
+        max-width: calc( 50% - 1rem);
+    }
+}
+
+@media (min-width: 600px) {
+    ul.archive > li {
+        flex-basis: calc( 33.33333% - 1rem);
+        max-width: calc( 33.33333% - 1rem);
+    }
+}
+
+@media (min-width: 992px) { 
+    ul.archive > li {
+        flex-basis: calc( 25% - 1rem);
+        max-width: calc( 25% - 1rem);
+    }
+}
+
+@media (min-width: 1200px) { 
+    ul.archive > li {
+        flex-basis: calc( 20% - 1rem);
+        max-width: calc( 20% - 1rem);
+    }
+}

@@ -16,9 +16,10 @@ class CachedPoster
         return fsencode_path($this->path);
     }
 
-    protected function get_cached_path(){
+    protected function get_cached_path($width, $height){
         $path = pathinfo(fsencode_path($this->path, CACHE_ROOT));
-        return $path['dirname'] . DIRECTORY_SEPARATOR . $path['filename'] . '.jpg';
+        $cached_name = $path['filename'] . '_' . $width . '_' . $height;
+        return $path['dirname'] . DIRECTORY_SEPARATOR . $path['filename'] . DIRECTORY_SEPARATOR . $cached_name . '.jpg';
     }
     
     public function get_raw() {
@@ -26,12 +27,14 @@ class CachedPoster
     }
 
     public function get_thumbnail(){
-        $this->view_cached() or $this->generate_thumbnail();
+        $width = defined('THUMBNAIL_WIDTH') ? THUMBNAIL_WIDTH : 0;
+        $height = defined('THUMBNAIL_HEIGHT') ? THUMBNAIL_HEIGHT : 0;
+        $this->view_cached($width, $height) or $this->generate_thumbnail($width, $height);
     }
  
     /** Partially borrowed from cover website */
-    protected function view_cached(){
-        $file_path = $this->get_cached_path();
+    protected function view_cached($width, $height){
+        $file_path = $this->get_cached_path($width, $height);
         if (!($fh = $this->open_cache_stream($file_path, 'rb')))
             return false;
         // Send an extra header with the mtime to make debugging the cache easier
@@ -45,7 +48,7 @@ class CachedPoster
     }
 
     /** Partially borrowed from cover website */
-    protected function generate_thumbnail(){
+    protected function generate_thumbnail($width, $height){
         if (in_array(strtolower($this->type), $this->DOCUMENT_TYPES))
             $imagick = new imagick($this->get_file_path().'[0]');
         else if (in_array(strtolower($this->type), $this->IMAGE_TYPES))
@@ -53,32 +56,43 @@ class CachedPoster
         else
             return true;
 
-        $imagick->scaleImage(0, THUMBNAIL_HEIGHT);
+        $cur_height = $imagick->getImageHeight();
+        $cur_width = $imagick->getImageWidth();
 
+        if ( $cur_height > $cur_width && $cur_height / $cur_width > 1.4143) {
+            // Image is higher then portrait A4-paper ( 1:sqrt(2) )
+            $new_height = $cur_width * sqrt(2);
+            $y = (int)($cur_height/2) - (int)($new_height/2);
+            $imagick->cropImage($cur_width, $new_height, 0, $y);
+        } else if ($cur_height < $cur_width && $cur_width / $cur_height > 1.78) {
+            // Image is wider then 16:9
+            $new_width = $cur_height * (16/9);
+            $x = (int)($cur_width/2) - (int)($new_width/2);
+            var_dump($x);
+            $imagick->cropImage($new_width, $cur_height, $x, 0);
+        }
 
-        $imagick->setColorspace(COLORSPACE_SRGB);
+        $bestfit = $width != 0 && $height != 0;
+        $imagick->scaleImage($width, $height, $bestfit);
+
+        // Oh shit cache not writable? Fall back to a temp stream.
+        $fout = $this->open_cache_stream($this->get_cached_path($width, $height), 'w+') or $fout = fopen('php://temp', 'w+');
+        
+        // Write image to php output buffer
+        $imagick->setColorspace(Imagick::COLORSPACE_SRGB);
         $imagick->setImageFormat('jpeg');
-        $imagick->writeImage( $this->get_cached_path() );
+        $imagick->writeImageFile($fout);
         $imagick->destroy();
-        $this->view_cached();
 
-        // // Oh shit cache not writable? Fall back to a temp stream.
-        // $fout = $this->open_cache_stream($this->get_cached_path(), 'w+') or $fout = fopen('php://temp', 'w+');
-        // rewind($fout);
+        fseek($fout, 0, SEEK_END);
+        $file_size = ftell($fout);
+        rewind($fout);
 
-        // // Write image to php output buffer
-        // $imagick->setImageFormat('jpeg');
-        // $imagick->writeImageFile($fout);
-        // $imagick->destroy();
+        serve_stream($fout, 'image/jpeg', $file_size);
 
-        // fseek($fout, 0, SEEK_END);
-        // $file_size = ftell($fout);
-        // rewind($fout);
-
-        // serve_stream($fout, 'image/jpeg', $file_size);
-
-        // // And clean up.
-        // fclose($fout);
+        // And clean up.
+        fclose($fout);
+        
         return true;
     }
     

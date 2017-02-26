@@ -23,10 +23,12 @@ class ArchiveView extends TemplateView
         $dir .= DIRECTORY_SEPARATOR;
         $output = array();
         foreach (glob($dir.'*') as $item){
-            $output[] = array(
-                'type' => is_dir($item) ? 'dir' : 'file',
-                'path' => urlencode_path($item),
-                'name' => pathinfo($item)['filename']
+            $output[] = array_merge(
+                array(
+                    'type' => is_dir($item) ? 'dir' : 'file',
+                    'path' => urlencode_path($item),
+                ),
+                pathinfo($item)
             );
         }
         return $output;
