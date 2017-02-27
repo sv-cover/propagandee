@@ -3,8 +3,9 @@
 abstract class TemplateView{
     protected $title;
 
-    public function __construct($title){
+    public function __construct($title, $menu_id=''){
         $this->title = $title;
+        $this->menu_id = $menu_id;
     }
 
     public function run(){
@@ -12,6 +13,10 @@ abstract class TemplateView{
     }
     
     abstract protected function render_content();
+
+    protected function get_menu_status($menu_id_cmp, $return_value='active'){
+        return strtolower($this->menu_id) == strtolower($menu_id_cmp) ? $return_value : '';
+    }
 
     protected function render_template(){
         ob_start();

@@ -38,9 +38,13 @@ class ArchiveView extends TemplateView
         $dirs = glob(ARCHIVE_ROOT . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
         $output = array();
         foreach (array_reverse($dirs) as $item){
-            $output[] = array(
-                'path' => urlencode_path($item),
-                'name' => pathinfo($item)['filename']
+            if (strpos(pathinfo($item)['basename'], '_') === 0)
+                continue;
+            $output[] = array_merge(
+                array(
+                    'path' => urlencode_path($item)
+                ),
+                pathinfo($item)
             );
         }
         return $output;
@@ -54,9 +58,10 @@ class ArchiveView extends TemplateView
     protected function render_content() {
         $index = $this->get_index();
         $posters = $this->list_folder($this->path);
-        return $this->render_template('templates/archive.phtml', compact('index', 'posters'));
+        $path = urlencode_path($this->path);
+        return $this->render_template('templates/archive.phtml', compact('index', 'posters', 'path'));
     }
 }
 
-$view = new ArchiveView('Poster Archive');
+$view = new ArchiveView('Poster Archive', 'archive');
 $view->run();

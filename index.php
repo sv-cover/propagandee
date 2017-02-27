@@ -8,5 +8,5 @@ class HomepageView extends TemplateView
     }
 }
 
-$view = new HomepageView('Home');
+$view = new HomepageView('Home', 'request');
 $view->run();

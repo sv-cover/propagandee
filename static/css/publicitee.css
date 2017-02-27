@@ -96,3 +96,14 @@ ul.archive > li > a.folder:focus > .icon > i.fa::before{
         max-width: calc( 20% - 1rem);
     }
 }
+
+.container-archive header{
+    margin-bottom: 1rem;
+}
+
+
+.container-archive footer{
+    padding: 1rem;
+    font-size: 80%;
+    color: #999;
+}

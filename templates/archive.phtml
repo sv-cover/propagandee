@@ -1,10 +1,14 @@
-<div class="container">
-    <ul class="nav nav-pills">
-        <?php foreach ($index as $folder): ?>
-            <li role="presentation"><a href="?path=<?= urlencode($folder['path']) ?>"><?= $folder['name'] ?></a></li>
-        <?php endforeach ?>
-    </ul>
-
+<div class="container container-archive">
+    <header>
+        <h1>Poster Archive</h1>
+        <ul class="nav nav-tabs">
+            <?php foreach ($index as $folder): ?>
+                <li class="<?php if(strpos($path, $folder['path']) === 0) echo 'active'; ?>" role="presentation">
+                    <a href="?path=<?= urlencode($folder['path']) ?>"><?= $folder['basename'] ?></a>
+                </li>
+            <?php endforeach ?>
+        </ul>
+    </header>
     <ul class="list-unstyled archive">
         <?php foreach ($posters as $item): ?>
             <?php if ($item['type'] === 'file'): ?>
@@ -24,4 +28,9 @@
             <?php endif ?>
         <?php endforeach ?>
     </ul>
+    <footer class="text-center">
+       <p>
+           Copyright on all posters on this website belongs to their respective authors. Please contact <a href="mailto:publicitee@svcover.nl">the PubliciTee</a> for more information.
+       </p>
+    </footer>
 </div>
