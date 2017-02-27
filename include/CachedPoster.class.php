@@ -52,7 +52,7 @@ class CachedPoster
         if (in_array(strtolower($this->type), $this->DOCUMENT_TYPES))
             $imagick = new imagick($this->get_file_path().'[0]');
         else if (in_array(strtolower($this->type), $this->IMAGE_TYPES))
-            $imagick = new imagick($this->get_file_path().'[0]');
+            $imagick = new imagick($this->get_file_path());
         else
             return true;
 
@@ -75,25 +75,18 @@ class CachedPoster
         $bestfit = $width != 0 && $height != 0;
         $imagick->scaleImage($width, $height, $bestfit);
 
-        // Oh shit cache not writable? Fall back to a temp stream.
-        $fout = $this->open_cache_stream($this->get_cached_path($width, $height), 'w+') or $fout = fopen('php://temp', 'w+');
+        $path = $this->get_cached_path($width, $height)
+        if (!file_exists(dirname($path)))
+                mkdir(dirname($path), 0777, true);
         
         // Write image to php output buffer
         $imagick->setColorspace(Imagick::COLORSPACE_SRGB);
         $imagick->setImageFormat('jpeg');
-        $imagick->writeImageFile($fout);
+        $imagick->writeImage( $path );
         $imagick->destroy();
-
-        fseek($fout, 0, SEEK_END);
-        $file_size = ftell($fout);
-        rewind($fout);
-
-        serve_stream($fout, 'image/jpeg', $file_size);
-
-        // And clean up.
-        fclose($fout);
         
-        return true;
+        return $this->view_cached($width, $height);
+
     }
     
     /** Borrowed from cover website */
