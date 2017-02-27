@@ -75,9 +75,10 @@ class CachedPoster
         $bestfit = $width != 0 && $height != 0;
         $imagick->scaleImage($width, $height, $bestfit);
 
-        $path = $this->get_cached_path($width, $height)
+        $path = $this->get_cached_path($width, $height);
+
         if (!file_exists(dirname($path)))
-                mkdir(dirname($path), 0777, true);
+            mkdir(dirname($path), 0777, true);
         
         // Write image to php output buffer
         $imagick->setColorspace(Imagick::COLORSPACE_SRGB);
