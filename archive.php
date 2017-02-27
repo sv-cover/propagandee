@@ -1,5 +1,7 @@
 <?php
 require_once 'include/init.php';
+require_once 'include/CachedPoster.class.php';
+
 
 class ArchiveView extends TemplateView
 {
@@ -22,7 +24,7 @@ class ArchiveView extends TemplateView
     protected function list_folder($dir) {
         $dir .= DIRECTORY_SEPARATOR;
         $output = array();
-        foreach (glob($dir.'*') as $item){
+        foreach (glob($dir.'[!_]*') as $item){
             $output[] = array_merge(
                 array(
                     'type' => is_dir($item) ? 'dir' : 'file',
@@ -35,11 +37,9 @@ class ArchiveView extends TemplateView
     }
 
     protected function get_index() {
-        $dirs = glob(ARCHIVE_ROOT . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        $dirs = glob(ARCHIVE_ROOT .  DIRECTORY_SEPARATOR . '[!_]*', GLOB_ONLYDIR);
         $output = array();
         foreach (array_reverse($dirs) as $item){
-            if (strpos(pathinfo($item)['basename'], '_') === 0)
-                continue;
             $output[] = array_merge(
                 array(
                     'path' => urlencode_path($item)
@@ -51,7 +51,7 @@ class ArchiveView extends TemplateView
     }
 
     protected function get_current_folder() {
-        $dir = glob(ARCHIVE_ROOT . DIRECTORY_SEPARATOR . '*', GLOB_ONLYDIR);
+        $dir = glob(ARCHIVE_ROOT . DIRECTORY_SEPARATOR . '[!_]*', GLOB_ONLYDIR);
         return end($dir);
     }
 

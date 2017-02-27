@@ -1,6 +1,7 @@
 <?php
 
-abstract class TemplateView{
+abstract class TemplateView
+{
     protected $title;
 
     public function __construct($title, $menu_id=''){
