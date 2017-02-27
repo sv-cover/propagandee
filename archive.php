@@ -5,7 +5,7 @@ class ArchiveView extends TemplateView
 {
     public function run() {
         if (!empty($_GET['poster'])) {
-            $poster = new CachedPoster($_GET['poster']);
+            $poster = new CachedPoster(urldecode($_GET['poster']));
             if (!empty($_GET['view']) && $_GET['view'] === 'thumbnail') 
                 $poster->get_thumbnail();
             else
