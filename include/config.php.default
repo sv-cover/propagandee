@@ -1,4 +1,3 @@
 <?php
 define('ARCHIVE_ROOT', '');
 define('CACHE_ROOT', '');
-define('THUMBNAIL_WIDTH', 800);

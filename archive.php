@@ -1,4 +1,7 @@
 <?php
+
+define('THUMBNAIL_WIDTH', 800);
+
 require_once 'include/init.php';
 require_once 'include/CachedPoster.class.php';
 
