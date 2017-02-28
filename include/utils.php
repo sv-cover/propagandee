@@ -21,6 +21,39 @@ function urlencode_path($path) {
     return implode('/', $parts);
 }
 
+function http_build_url($parts)
+{ 
+    return implode("", array(
+        isset($parts['scheme']) ? $parts['scheme'] . '://' : '',
+        isset($parts['user']) ? $parts['user'] : '',
+        isset($parts['pass']) ? ':' . $parts['pass']  : '',
+        (isset($parts['user']) || isset($parts['pass'])) ? "@" : '',
+        isset($parts['host']) ? $parts['host'] : '',
+        isset($parts['port']) ? ':' . intval($parts['port']) : '',
+        isset($parts['path']) ? $parts['path'] : '',
+        isset($parts['query']) ? '?' . $parts['query'] : '',
+        isset($parts['fragment']) ? '#' . $parts['fragment'] : ''
+    ));
+}
+
+function http_inject_url($url, array $data){
+    // Parse the url
+    $url_parts = parse_url($url);
+
+    // Explicitly parse the query part as well
+    if (isset($url_parts['query']))
+        parse_str($url_parts['query'], $url_query);
+    else
+        $url_query = array();
+
+    // Splice in the token authentication
+    $url_query = array_merge($data, $url_query);
+
+    // Rebuild the url
+    $url_parts['query'] = http_build_query($url_query);
+    return http_build_url($url_parts);
+}
+
 
 /** Borrowed from Documents & Templates */
 function get_mime_type($file) {
