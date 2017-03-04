@@ -134,14 +134,7 @@ function cover_session_get_committees()
     if (!$session)
         return array();
 
-    $data = array(
-        'method' => 'get_committees',
-        'member_id' => $session->id
-        );
-
-    $response = http_get_json(COVER_API_URL, $data);
-
-    return $committees = array_keys((array) $response->result);
+    return $committees = array_keys((array) get_cover_session()->committees);
 }
 
 function cover_session_in_committee($committee)
