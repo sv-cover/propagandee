@@ -19,7 +19,7 @@ class PosterRequestForm extends Form
 
         $this->fields['name']          = new TextField     ('name',           'Name',          $fname, false, array('placeholder' => 'John Johnson or SomethingCee'));
         $this->fields['email']         = new EmailField    ('email',          'Email',         $fname, false, array('placeholder' => 'myemailaddress@svcover.nl'));
-        $this->fields['activity_name'] = new TextField     ('activity_name',  'Activity name', $fname, false, array('placeholder' => 'Volcano zorbing'));
+        $this->fields['activity_name'] = new TextField     ('activity-name',  'Activity name', $fname, false, array('placeholder' => 'Volcano zorbing'));
         $this->fields['date_time']     = new TextField     ('date-time',      'Date and time', $fname, false, array('autocomplete' => 'off'));
         $this->fields['location']      = new TextField     ('location',       'Location',      $fname, false, array('placeholder' => 'Cover room'));
         $this->fields['description']   = new TextAreaField ('description',    'Description',   $fname, true,  array('placeholder' => 'Sign up at volcanoes.svcover.nl'));
