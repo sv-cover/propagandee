@@ -123,7 +123,7 @@ abstract class Field
     }
 
     public function validate(){
-        if ($this->optional || ( isset($this->value) && $this->value !== '' ))
+        if ($this->optional || ( isset($this->value) && !empty(trim($this->value)) ) )
             return true;
         $this->errors[] = sprintf('%s is required', $this->label);
         return false;
@@ -153,8 +153,8 @@ class InputField extends Field
         $attributes['name'] = $this->name;
         $attributes['id'] = $this->form_name . '-' . $this->name;
 
-        if (!$this->optional)
-            $attributes[] = 'required';
+        // if (!$this->optional)
+        //     $attributes[] = 'required';
 
         if (isset($this->value) )
             $attributes['value'] = $this->value;
@@ -171,8 +171,8 @@ class TextAreaField extends Field
         $attributes['name'] = $this->name;
         $attributes['id'] = $this->form_name . '-' . $this->name;
 
-        if (!$this->optional)
-            $attributes[] = 'required';
+        // if (!$this->optional)
+        //     $attributes[] = 'required';
 
         $value = isset($this->value) ? $this->value : '';
 
@@ -270,6 +270,14 @@ class SelectField extends Field
         return sprintf("<select %s>\n%s</select>\n",
             form_render_attributes($attributes),
             implode("\n", $options_html));
+    }
+
+    public function get_option($name){
+        return $this->options[$name];
+    }
+
+    public function get_selected_display(){
+        return $this->get_option($this->value)[0];
     }
 }
 

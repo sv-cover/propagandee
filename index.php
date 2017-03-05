@@ -5,41 +5,20 @@ require_once 'include/form.php';
 
 class PosterRequestForm extends Form
 {
+    protected $agenda = array();
+
     public function __construct(){
         $fname = 'poster-request';
         $this->name = $fname;
         $this->fields = array();
+
         if(get_cover_session()){
-            $data = array(
-                'method' => 'agenda',
-                'session_id' => $_COOKIE[COVER_COOKIE_NAME], 
-                'committees' => cover_session_get_committees()
-            );
-            $agenda = http_get_json(COVER_API_URL, $data);
-
-            $activities = array(array('Please choose your activity', array('disabled', 'selected')));
-
-            foreach($agenda as $activity)
-                $activities[$activity->id] = array(
-                    $activity->kop . ' - ' . $activity->committee__naam . ' - ' . date_format(date_create($activity->van), 'Y-m-d'), 
-                    array(
-                        'data-starttime' => $activity->van, 
-                        'data-location' => $activity->locatie, 
-                        'data-committee' => $activity->committee__login
-                    )
-                );
-            $activities['other'] = array('other');
-            $this->fields['activity'] = new SelectField   ('activity',      'Activity',     $activities, $fname, true);
-
-            $committees = array(array('Please choose your committee', array('disabled', 'selected')));
-            foreach(get_cover_session()->committees as $committee => $display)
-                $committees[$committee] = array($display);
-            $committees['other'] = array('other');
-            $this->fields['committee'] = new SelectField   ('committee',      'Committee',     $committees, $fname, true);
+            $this->fields['activity'] = $this->get_activities_field();
+            $this->fields['committee'] = $this->get_committees_field();
         }
 
         $this->fields['name']          = new TextField     ('name',           'Name',          $fname, false, array('placeholder'=> 'John Johnson or SomethingCee'));
-        $this->fields['email']         = new EmailField    ('email',          'Email',         $fname, true,  array('placeholder'=> 'myemailaddress@svcover.nl'));
+        $this->fields['email']         = new EmailField    ('email',          'Email',         $fname, false, array('placeholder'=> 'myemailaddress@svcover.nl'));
         $this->fields['activity_name'] = new TextField     ('activity_name',  'Activity name', $fname, false, array('placeholder'=> 'Volcano zorbing'));
         $this->fields['date_time']     = new TextField     ('date-time',      'Date and time', $fname);
         $this->fields['location']      = new TextField     ('location',       'Location',      $fname, false, array('placeholder'=> 'Cover room'));
@@ -47,19 +26,91 @@ class PosterRequestForm extends Form
     }
 
     public function validate(){
-        $result = parent::validate();
-        
-        if (!$result)
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST')
             return false;
 
-        foreach ($this->field as $field){
-            if (!$field->optional && empty(trim($field->value))){
-                $result = false;
-                $field->errors[] = sprintf('%s should not be empty', $fields->label);
-            }
-        }
+        $validate_select = function($select_field){
+            return isset($select_field)
+                && $select_field->validate()
+                && !empty($select_field->value)
+                && $select_field->value !== 'other';
+        };
 
+        $result = true;
+
+        if ( $validate_select($this->fields['activity']) ){
+            $activity = $this->agenda[ $this->fields['activity']->value ];
+
+            if (empty($activity->locatie))
+                $result = $this->fields['location']->validate()  && $result;
+            $result = $this->fields['description']->validate()   && $result;
+        } else if ($validate_select($this->fields['committee']) ){
+            $result = $this->fields['activity_name']->validate() && $result;
+            $result = $this->fields['date_time']->validate()     && $result;
+            $result = $this->fields['location']->validate()      && $result;
+            $result = $this->fields['description']->validate()   && $result;
+        } else {
+            $result = parent::validate();
+        }
+     
         return $result;
+    }
+
+    public function process_values(){
+        $select_is_populated = function($select_field){
+            return isset($select_field)
+                && !empty($select_field->value)
+                && $select_field->value !== 'other';
+        };
+
+        if ($select_is_populated($this->fields['activity'])){
+            $activity = $this->agenda[ $this->fields['activity']->value ];
+
+            $this->fields['name']->value = $activity->committee__naam;
+            $this->fields['email']->value = get_committee_email($activity->committee__login);
+            $this->fields['activity_name']->value = $activity->kop;
+            $this->fields['date_time']->value = $activity->van;
+            if (!empty($activity->locatie))
+                $this->fields['location']->value = $activity->locatie;
+
+        } else if ($select_is_populated($this->fields['committee'])){
+
+            $this->fields['name']->value = $this->fields['committee']->get_selected_display();
+            $this->fields['email']->value = get_committee_email($this->fields['committee']->value);
+        }
+    }
+
+    protected function get_activities_field(){
+        $agenda = cover_get_json('agenda', array('committee' => cover_session_get_committees()));
+
+        $activities = array(array('Please choose your activity', array('disabled', 'selected')));
+
+        foreach($agenda as $activity){
+            $this->agenda[$activity->id] = $activity;
+            $activities[$activity->id] = array(
+                $activity->kop . ' - ' . $activity->committee__naam . ' - ' . date_format(date_create($activity->van), 'Y-m-d'), 
+                array(
+                    'value' => $activity->id,
+                    'data-starttime' => $activity->van, 
+                    'data-location' => $activity->locatie, 
+                    'data-committee' => $activity->committee__login
+                )
+            );
+        }
+        
+        $activities['other'] = array('other');
+        
+        return new SelectField('activity', 'Activity', $activities, $this->name, true); 
+    }
+
+    protected function get_committees_field(){
+        $committees = array(array('Please choose your committee', array('disabled', 'selected')));
+        
+        foreach(get_cover_session()->committees as $committee => $display)
+            $committees[$committee] = array($display);
+        $committees['other'] = array('other');
+        
+        return new SelectField('committee', 'Committee', $committees, $this->name, true);
     }
 
     protected function render_field($field, $attributes=array(), $error_attributes=array()){

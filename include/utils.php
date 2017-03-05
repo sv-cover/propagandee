@@ -1,5 +1,9 @@
 <?php
 
+function get_committee_email($login){
+    return sprintf('%s@svcover.nl', $login);
+}
+
 /** Borrowed from Documents & Templates */
 function fsencode_path($path, $root = ARCHIVE_ROOT){
     $parts = array_filter(explode('/', $path));

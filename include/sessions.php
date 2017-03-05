@@ -141,3 +141,13 @@ function cover_session_in_committee($committee)
 {
     return in_array(strtolower($committee), cover_session_get_committees());
 }
+
+function cover_get_json($method, array $data = array(), $use_session = true)
+{
+    if ($use_session && get_cover_session() && !isset($data['session_id']))
+        $data['session_id'] = $_COOKIE[COVER_COOKIE_NAME];
+
+    $data['method'] = $method;
+
+    return http_get_json(COVER_API_URL, $data);
+}
