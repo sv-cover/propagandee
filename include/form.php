@@ -8,11 +8,15 @@ function form_escape($value){
 function form_render_attributes($attributes){
     $attribute_html = array();
 
-    foreach ($attributes as $key => $value)
+    foreach ($attributes as $key => $value){
+        if (is_array($value))
+            $value = implode(' ', $value);
+
         if (is_int($key))
             $attribute_html[] = $value;
         else
             $attribute_html[] = sprintf('%s="%s"', $key, form_escape($value));
+    }
 
     return implode(' ', $attribute_html);
 }
@@ -60,43 +64,47 @@ class Form
         return implode(' ', $error_html);
     }
 
-    protected function render_field($field, $attributes=array(), $error_attributes=array()){
+    protected function render_field($field, $attributes=array(), $error_attributes=array(), $parent_attributes=array()){
         if (get_class($field) === 'CheckBoxField')
-            return sprintf('<div>%s %s</div>', 
+            return sprintf('<div %s>%s %s</div>', 
+                form_render_attributes($parent_attributes),
                 $field->render_with_label($attributes),
-                $this->render_field_errors($field, $error_attributes));
-        return sprintf('<div>%s %s %s</div>', 
+                $this->render_field_errors($field, $error_attributes)
+            );
+        return sprintf('<div %s>%s %s %s</div>', 
+            form_render_attributes($parent_attributes),
             $field->render_label(),
             $field->render($attributes),
-            $this->render_field_errors($field, $error_attributes));
+            $this->render_field_errors($field, $error_attributes)
+        );
     }
     
-    protected function render_field_by_key($key, $attributes=array(), $error_attributes=array()){
-        return $this->render_field($this->fields[$key], $attributes, $error_attributes);
+    protected function render_field_by_key($key, $attributes=array(), $error_attributes=array(), $parent_attributes=array()){
+        return $this->render_field($this->fields[$key], $attributes, $error_attributes, $parent_attributes);
     }
 
-    protected function render_body($submit_attributes=array()){
+    protected function render_body(){
         $body_html = array();
         
-        foreach ($this->fields as $field) {
+        foreach ($this->fields as $field)
             $body_html[] = $this->render_field($field);
-        }
 
-        $submit_attributes['type'] = 'submit';
-        $body_html[] = sprintf('<button %s>Submit</button>', form_render_attributes($submit_attributes));
+        $body_html[] = '<button type="submit">Submit</button>';
 
         return implode(' ', $body_html);
     }
 
-    public function render($attributes=array(), $action=null, $submit_attributes=array()){
+    public function render($attributes=array(), $action=null){
         $attributes['id'] = $this->name;
         $attributes['method'] = 'POST';
+
         if(!empty($action))
             $attributes['action'] = $action;
 
         return sprintf('<form %s>%s</form>',
             form_render_attributes($attributes),
-            $this->render_body($submit_attributes));
+            $this->render_body()
+        );
     }
     
 }
@@ -106,9 +114,9 @@ abstract class Field
 {
     protected $name;
     protected $label;
-    public $optional;
     protected $form_name;
-    protected $attributes;
+    public $optional;
+    public $attributes;
     public $value;
     public $errors = array();
 
@@ -222,9 +230,9 @@ class SelectField extends Field
 {   
     protected $options;
 
-    public function __construct($name, $label, $options, $form_name='', $optional=false){
+    public function __construct($name, $label, $options, $form_name='', $optional=false, $attributes=array()){
         $this->options = $options;
-        parent::__construct($name, $label, $form_name, $optional);
+        parent::__construct($name, $label, $form_name, $optional, $attributes);
     }
 
     public function validate(){
@@ -248,8 +256,8 @@ class SelectField extends Field
         $attributes['name'] = $this->name;
         $attributes['id'] = $this->form_name . '-' . $this->name;
 
-        if (!$this->optional)
-            $attributes[] = 'required';
+        // if (!$this->optional)
+        //     $attributes[] = 'required';
 
         $options_html = array();
 

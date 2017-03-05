@@ -17,12 +17,12 @@ class PosterRequestForm extends Form
             $this->fields['committee'] = $this->get_committees_field();
         }
 
-        $this->fields['name']          = new TextField     ('name',           'Name',          $fname, false, array('placeholder'=> 'John Johnson or SomethingCee'));
-        $this->fields['email']         = new EmailField    ('email',          'Email',         $fname, false, array('placeholder'=> 'myemailaddress@svcover.nl'));
-        $this->fields['activity_name'] = new TextField     ('activity_name',  'Activity name', $fname, false, array('placeholder'=> 'Volcano zorbing'));
-        $this->fields['date_time']     = new TextField     ('date-time',      'Date and time', $fname);
-        $this->fields['location']      = new TextField     ('location',       'Location',      $fname, false, array('placeholder'=> 'Cover room'));
-        $this->fields['description']   = new TextAreaField ('description',    'Description',   $fname, true,  array('placeholder'=> 'Sign up at volcanoes.svcover.nl'));
+        $this->fields['name']          = new TextField     ('name',           'Name',          $fname, false, array('placeholder' => 'John Johnson or SomethingCee'));
+        $this->fields['email']         = new EmailField    ('email',          'Email',         $fname, false, array('placeholder' => 'myemailaddress@svcover.nl'));
+        $this->fields['activity_name'] = new TextField     ('activity_name',  'Activity name', $fname, false, array('placeholder' => 'Volcano zorbing'));
+        $this->fields['date_time']     = new TextField     ('date-time',      'Date and time', $fname, false, array('autocomplete' => 'off'));
+        $this->fields['location']      = new TextField     ('location',       'Location',      $fname, false, array('placeholder' => 'Cover room'));
+        $this->fields['description']   = new TextAreaField ('description',    'Description',   $fname, true,  array('placeholder' => 'Sign up at volcanoes.svcover.nl'));
     }
 
     public function validate(){
@@ -100,7 +100,7 @@ class PosterRequestForm extends Form
         
         $activities['other'] = array('other');
         
-        return new SelectField('activity', 'Activity', $activities, $this->name, true); 
+        return new SelectField('activity', 'Activity', $activities, $this->name, true, array('hidden' => true)); 
     }
 
     protected function get_committees_field(){
@@ -110,26 +110,46 @@ class PosterRequestForm extends Form
             $committees[$committee] = array($display);
         $committees['other'] = array('other');
         
-        return new SelectField('committee', 'Committee', $committees, $this->name, true);
+        return new SelectField('committee', 'Committee', $committees, $this->name, true, array('hidden' => true));
     }
 
-    protected function render_field($field, $attributes=array(), $error_attributes=array()){
-        $error_class = '';
-        if (!empty($field->errors))
-            $error_class = 'has-error';
+    protected function render_body(){
+        $body_html = array();
+        
+        foreach ($this->fields as $field) {
+            $parent_attrs = array('class' => array());
+            
+            if (!empty($field->errors))
+                $parent_attrs['class'][] = 'has-error';
 
-        if (get_class($field) === 'CheckBoxField')
-            return sprintf('<div class="checkbox %s">%s %s</div>', 
-                $error_class,
-                $field->render_with_label($attributes),
-                $this->render_field_errors($field, array('class' => 'help-block')));
+            if (isset($field->attributes['hidden'])){
+                if ($field->attributes['hidden'])
+                    $parent_attrs['style'] = 'display: none;';
+                unset($field->attributes['hidden']);
+            }
 
-        $attributes['class'] = 'form-control';
-        return sprintf('<div class="form-group %s">%s %s %s</div>', 
-            $error_class,
-            $field->render_label(),
-            $field->render($attributes),
-            $this->render_field_errors($field, array('class' => 'help-block')));
+            if (get_class($field) === 'CheckBoxField'){
+                $parent_attrs['class'][] = 'checkbox';
+                $body_html[] = $this->render_field(
+                    $field,
+                    array(), 
+                    array('class' => 'help-block'), 
+                    $parent_attrs
+                );    
+            } else {
+                $parent_attrs['class'][] = 'form-group';
+                $body_html[] = $this->render_field(
+                    $field, 
+                    array('class' => 'form-control'), 
+                    array('class' => 'help-block'), 
+                    $parent_attrs
+                );    
+            }
+        }
+
+        $body_html[] = '<button type="submit" class="btn btn-primary">Submit</button>';
+
+        return implode(' ', $body_html);
     }
 
 }
@@ -162,7 +182,7 @@ class HomepageView extends TemplateView
             $result = $this->result;
             $content = $this->render_template('templates/poster_request_form_processed.phtml', compact('result'));
         } else
-            $content = $this->form->render(null, null, array('class' => 'btn btn-primary'));
+            $content = $this->form->render();
         return $this->render_template('templates/poster_request_form.phtml', compact('content'));
     }
 
