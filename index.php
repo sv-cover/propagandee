@@ -146,7 +146,7 @@ class HomepageView extends TemplateView
     }
 
     public function run(){
-        if ($this->form->validate()){
+        if (get_cover_session() && $this->form->validate()){
             $this->form->process_values();
             $this->send_email();
             $this->log_request();
@@ -157,12 +157,14 @@ class HomepageView extends TemplateView
     }
 
     protected function render_content(){
-        if (!empty($this->result))
-            $form = null;
-        else
-            $form = $this->form->render(null, null, array('class' => 'btn btn-primary'));
-        $result = $this->result;
-        return $this->render_template('templates/poster_request_form.phtml', compact('form', 'result'));
+        if (!get_cover_session())
+            $content = '<a href="<?= cover_login_url() ?>" class="btn btn-primary">Login and get started!</a>';
+        else if (!empty($this->result)){
+            $result = $this->result;
+            $content = $this->render_template('templates/poster_request_form_processed.phtml', compact('result'));
+        } else
+            $content = $this->form->render(null, null, array('class' => 'btn btn-primary'));
+        return $this->render_template('templates/poster_request_form.phtml', compact('content'));
     }
 
     protected function log_request(){
