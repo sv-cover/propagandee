@@ -3,10 +3,11 @@
 abstract class TemplateView
 {
     protected $title;
+    protected $page_id;
 
-    public function __construct($title, $menu_id=''){
+    public function __construct($title, $page_id=''){
         $this->title = $title;
-        $this->menu_id = $menu_id;
+        $this->page_id = $page_id;
     }
 
     public function run(){
@@ -14,10 +15,6 @@ abstract class TemplateView
     }
     
     abstract protected function render_content();
-
-    protected function get_menu_status($menu_id_cmp, $return_value='active'){
-        return strtolower($this->menu_id) == strtolower($menu_id_cmp) ? $return_value : '';
-    }
 
     protected function render_template(){
         ob_start();
@@ -29,8 +26,9 @@ abstract class TemplateView
 
     public function render_layout(){
         $title = $this->title;
+        $page_id = $this->page_id;
         $content = $this->render_content();
-        return $this->render_template('templates/layout.phtml', compact('title','content'));
+        return $this->render_template('templates/layout.phtml', compact('title', 'page_id', 'content'));
     }
 
 }

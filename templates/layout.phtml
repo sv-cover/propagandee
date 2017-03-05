@@ -22,8 +22,12 @@
                 <!-- Toggleable content -->
                 <div class="collapse navbar-collapse" id="navbar-demo-collapse">
                     <ul class="navbar-right">
-                        <li class="<?= $this->get_menu_status('request') ?>"><a href="/">Request</a></li>
-                        <li class="<?= $this->get_menu_status('archive') ?>"><a href="/archive.php">Archive</a></li>
+                        <li class="<?= strtolower($page_id) === 'request' ? 'active' : '' ?>">
+                            <a href="/">Request</a>
+                        </li>
+                        <li class="<?= strtolower($page_id) === 'archive' ? 'active' : '' ?>">
+                            <a href="/archive.php">Archive</a>
+                        </li>
                         <!-- Dropdown menu -->
                         <?php if(!get_cover_session()): ?>
                             <li><a href="<?= cover_login_url() ?>">Log in</a></li>

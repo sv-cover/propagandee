@@ -148,9 +148,8 @@ class HomepageView extends TemplateView
     public function run(){
         if (get_cover_session() && $this->form->validate()){
             $this->form->process_values();
-            $this->send_email();
-            $this->log_request();
-            $this->success = true;
+            $this->email_submission();
+            $this->log_submission();
         }
 
         echo $this->render_layout();
@@ -167,17 +166,7 @@ class HomepageView extends TemplateView
         return $this->render_template('templates/poster_request_form.phtml', compact('content'));
     }
 
-    protected function log_request(){
-        $fp = fopen(SUBMISSION_LOG, 'a');
-        fwrite($fp, "\n----------------------------------------------\n");
-        fwrite($fp, sprintf("Poster request filed at %s\n", date(DATE_ATOM)));
-        foreach ($this->form->fields as $name => $field)
-            fwrite($fp, sprintf("%s: %s\n", $name, $field->value));
-        fwrite($fp, sprintf("Result: %s\n", $this->result));
-        fclose($fp);
-    }
-
-    protected function send_email(){
+    protected function email_submission(){
         $data = array();
         foreach ($this->form->fields as $name => $field)
             $data[$name] = $field->value;
@@ -207,6 +196,16 @@ class HomepageView extends TemplateView
             $this->result = 'success';
         else
             $this->result = sprintf('Failed to send email!');
+    }
+
+    protected function log_submission(){
+        $fp = fopen(SUBMISSION_LOG, 'a');
+        fwrite($fp, "\n----------------------------------------------\n");
+        fwrite($fp, sprintf("Poster request filed at %s\n", date(DATE_ATOM)));
+        foreach ($this->form->fields as $name => $field)
+            fwrite($fp, sprintf("%s: %s\n", $name, $field->value));
+        fwrite($fp, sprintf("Result: %s\n", $this->result));
+        fclose($fp);
     }
 }
 
