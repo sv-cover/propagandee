@@ -4,6 +4,10 @@ function get_committee_email($login){
     return sprintf('%s@svcover.nl', $login);
 }
 
+function escape($data){
+    return nl2br(htmlentities($data, ENT_COMPAT, 'utf-8'));
+}
+
 /** Borrowed from Documents & Templates */
 function fsencode_path($path, $root = ARCHIVE_ROOT){
     $parts = array_filter(explode('/', $path));

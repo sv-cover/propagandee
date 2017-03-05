@@ -1,0 +1,17 @@
+<div class="container container-narrow">
+    <h1>Poster Request Form</h1>
+    <p>Use this form to request posters for your activities. Please keep in mind that posters need to be requested at least three weeks before the activity. We will then make sure the poster will be printed and distributed within a week.</p>
+    <hr>
+    <?php if ( isset($form) ): ?>
+        <?= $form ?>
+    <?php elseif ($result === 'success'): ?>
+        <p class="happy-message">
+            We have received your request and will handle it as soon as possible! <a href="/">File another request</a>
+        </p>
+    <?php else: ?>
+        <p>
+            <?= $result ?>
+            Please contact the Publicitee!
+        </p>
+    <?php endif ?>
+</div>

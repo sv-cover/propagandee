@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Poster request confirmation: <?= escape($activity_name) ?></title>
+    <style>
+    body {
+        font: 13px/16px sans-serif;
+    }
+    </style>
+</head>
+<body>
+    <p>
+        Dear <em><?= escape($name) ?></em>,
+    </p>
+
+    <p>
+        Thank you for your poster request. We will try to make a poster as soon as possible.
+    </p>
+
+    <p>
+        Activity:
+        <?php if (isset($activity) && !empty($activity)): ?>
+            <a href="https://www.svcover.nl/agenda.php?agenda_id=<?= escape($activity) ?>">
+                <?= escape($activity_name) ?>    
+            </a>
+        <?php else: ?>
+                <?= escape($activity_name) ?>    
+        <?php endif ?>
+    </p>
+
+<?php if (!empty($dateTime)): ?>
+    <p>
+        Date and time: <?= escape($date_time) ?>
+    </p>
+<?php endif ?>
+
+<?php if (!empty($location)): ?>
+    <p>
+        Location: <?= escape($location) ?>
+    </p>
+<?php endif ?>
+
+<?php if (!empty($description)): ?>
+    <p>
+        Description:
+    </p>
+    <blockquote>
+        <?= escape($description) ?>
+    </blockquote>
+<?php endif ?>
+
+    <p>
+        If you have any questions or remarks, please contact us.
+    </p>
+    <p>
+        Kind regards,<br>
+        The PubliciTee
+    </p>
+</body>
+</html>
