@@ -43,17 +43,10 @@ class Form
         return $result;
     }
     
-    protected function render_template(){
-        ob_start();
-        if (func_num_args() > 1)
-            extract(func_get_arg(1));
-        include func_get_arg(0);
-        return ob_get_clean();
-    }
-
     protected function render_field_errors($field, $attributes){
         $error_html = array();
-        foreach ($field->errors as $error) {
+        $errors = array_unique($field->errors);
+        foreach ($errors as $error) {
             if ($error === true) 
                 continue;
 

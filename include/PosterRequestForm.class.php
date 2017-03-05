@@ -100,7 +100,7 @@ class PosterRequestForm extends Form
         
         $activities['other'] = array('other');
         
-        return new SelectField('activity', 'Activity', $activities, $this->name, true, array('hidden' => true)); 
+        return new SelectField('activity', 'Activity', $activities, $this->name, false, array('hidden' => true)); 
     }
 
     protected function get_committees_field(){
@@ -110,7 +110,7 @@ class PosterRequestForm extends Form
             $committees[$committee] = array($display);
         $committees['other'] = array('other');
         
-        return new SelectField('committee', 'Committee', $committees, $this->name, true, array('hidden' => true));
+        return new SelectField('committee', 'Committee', $committees, $this->name, false, array('hidden' => true));
     }
 
     protected function render_body(){
