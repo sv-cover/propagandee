@@ -20,6 +20,23 @@ textarea{
     resize: vertical;
 }
 
+.container > header{
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+
+.container > footer{
+    padding: 1rem;
+    font-size: 80%;
+    color: #999;
+}
+
+/*
+ * Archive specific CSS
+ */
+
 ul.archive{
     display: flex;
     flex-flow: row wrap;
@@ -95,15 +112,4 @@ ul.archive > li > a.folder:focus > .icon > i.fa::before{
         flex-basis: calc( 20% - 1rem);
         max-width: calc( 20% - 1rem);
     }
-}
-
-.container-archive header{
-    margin-bottom: 1rem;
-}
-
-
-.container-archive footer{
-    padding: 1rem;
-    font-size: 80%;
-    color: #999;
 }
