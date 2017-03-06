@@ -87,7 +87,9 @@ class PosterRequestView extends TemplateView
 
     /** Log the request in case shit hits the fan*/
     protected function log_submission(){
-        $fp = fopen(SUBMISSION_LOG, 'a');
+        $path = pathinfo(SUBMISSION_LOG);
+        $filename = $path['dirname'] . DIRECTORY_SEPARATOR . $path['filename']. date('_Y_m.') . $path['extension'];
+        $fp = fopen($filename, 'a');
         
         // Create log header
         fwrite($fp, "\n----------------------------------------------\n");
