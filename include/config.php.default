@@ -1,3 +1,11 @@
 <?php
-define('ARCHIVE_ROOT', '');
-define('CACHE_ROOT', '');
+define('ARCHIVE_ROOT', '/absolute/path/to/poster/archive');
+define('CACHE_ROOT', '/absolute/path/to/cache');
+
+define('SUBMISSION_LOG', '/path/to/poster_requests.log');
+
+define('EMAIL_SENDER', 'PubliciTee <publicitee@svcover.nl>');
+
+define('SERVER_NAME', 'https://publicitee.svcover.nl');
+define('COVER_APP', 'PubliciTee');
+define('COVER_SECRET', '');
