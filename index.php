@@ -34,7 +34,7 @@ class PosterRequestView extends TemplateView
     protected function render_content(){
         if (!cover_session_logged_in())
             // Only display form if member is logged in
-            $content = '<a href="<?= cover_login_url() ?>" class="btn btn-primary">Login and get started!</a>';
+            $content = sprintf('<a href="%s" class="btn btn-primary">Login and get started!</a>', cover_login_url());
         else if (!empty($this->result)){
             // Render message if form is successfully processed
             $result = $this->result;
