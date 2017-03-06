@@ -61,11 +61,15 @@ class CachedPoster
     protected function generate_thumbnail($width, $height){
         // Open poster, get first page of complex poster
         if (in_array(strtolower($this->type), $this->DOCUMENT_TYPES))
-            $imagick = new imagick($this->get_file_path().'[0]');
+            $imagick = new Imagick($this->get_file_path().'[0]');
         else if (in_array(strtolower($this->type), $this->IMAGE_TYPES))
-            $imagick = new imagick($this->get_file_path());
+            $imagick = new Imagick($this->get_file_path());
         else
             return false;
+
+        $imagick->setImageBackgroundColor('#ffffff');
+        $imagick->setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
+        $imagick->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
 
         $cur_height = $imagick->getImageHeight();
         $cur_width = $imagick->getImageWidth();
