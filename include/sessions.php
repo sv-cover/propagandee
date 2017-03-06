@@ -111,7 +111,7 @@ function get_cover_session(){
 
     // If not, bail out. I have no place else to look :(
     else
-        return null;
+        return false;
 
     if ($session !== null)
         return $session;
