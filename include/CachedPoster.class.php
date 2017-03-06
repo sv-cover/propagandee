@@ -106,10 +106,13 @@ class CachedPoster
     
     /** Serves a file from disk to client */
     protected function serve_file($file){
-        if ($content_type = get_mime_type($file))
+        if ($content_type = get_mime_type($file)){
             header('Content-Type: ' . $content_type);
-        else {
-            $name = pathinfo($file, PATHINFO_FILENAME);
+            $name = pathinfo($file, PATHINFO_BASENAME);
+            header('Content-Disposition: inline; filename="' . $name . '"');
+        } else {
+            // If mime type not found, offer file for download
+            $name = pathinfo($file, PATHINFO_BASENAME);
             header('Content-Disposition: attachment; filename="' . $name . '"');
         }
 
