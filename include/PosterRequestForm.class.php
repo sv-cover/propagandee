@@ -18,8 +18,12 @@ class PosterRequestForm extends Form
 
         // Set activity and committee field, but only if member is logged in
         if(cover_session_logged_in()){
-            $this->fields['activity'] = $this->create_activities_field();
-            $this->fields['committee'] = $this->create_committees_field();
+            // Fetch agenda data from Cover API
+            $agenda = cover_get_json('agenda', array('committee' => cover_session_get_committees()));
+            if (!empty($agenda))
+                $this->fields['activity'] = $this->create_activities_field($agenda);
+            if (!empty(get_cover_session()->committees))
+                $this->fields['committee'] = $this->create_committees_field(get_cover_session()->committees);
         }
 
         // Set other fields
@@ -96,10 +100,7 @@ class PosterRequestForm extends Form
     }
 
     /** Create activities field */
-    protected function create_activities_field(){
-        // Fetch agenda data from Cover API
-        $agenda = cover_get_json('agenda', array('committee' => cover_session_get_committees()));
-
+    protected function create_activities_field($agenda){
         // Set placeholder option
         $activities = array(array('Please choose your activity', array('disabled', 'selected')));
 
@@ -123,18 +124,18 @@ class PosterRequestForm extends Form
         return new SelectField('activity', 'Activity', $activities, $this->name, false, array('hidden' => true)); 
     }
 
-    protected function create_committees_field(){
+    protected function create_committees_field($committees){
         // Set placeholder option
-        $committees = array(array('Please choose your committee', array('disabled', 'selected')));
+        $committee_options = array(array('Please choose your committee', array('disabled', 'selected')));
         
         // Create options for all committees the current logged in member is in
-        foreach(get_cover_session()->committees as $committee => $display)
-            $committees[$committee] = array($display);
+        foreach($committees as $committee => $display)
+            $committees_options[$committee] = array($display);
 
-        $committees['other'] = array('other');
+        $committees_options['other'] = array('other');
         
         // Create and return field
-        return new SelectField('committee', 'Committee', $committees, $this->name, false, array('hidden' => true));
+        return new SelectField('committee', 'Committee', $committees_options, $this->name, false, array('hidden' => true));
     }
 
     /** Returns a bootstrap style HTML string of the body of the form */
