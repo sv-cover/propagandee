@@ -130,12 +130,12 @@ class PosterRequestForm extends Form
         
         // Create options for all committees the current logged in member is in
         foreach($committees as $committee => $display)
-            $committees_options[$committee] = array($display);
+            $committee_options[$committee] = array($display);
 
-        $committees_options['other'] = array('other');
+        $committee_options['other'] = array('other');
         
         // Create and return field
-        return new SelectField('committee', 'Committee', $committees_options, $this->name, false, array('hidden' => true));
+        return new SelectField('committee', 'Committee', $committee_options, $this->name, false, array('hidden' => true));
     }
 
     /** Returns a bootstrap style HTML string of the body of the form */
