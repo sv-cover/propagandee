@@ -16,11 +16,14 @@
         <nav class="navbar navbar-cover">
             <div class="container-fluid">
                 <div class="navbar-header">
+                    <button class="navbar-toggle collapsed navicon-button" href="#navbar-main-collapse" data-toggle="collapse" aria-expanded="false" aria-controls="navbar-main-collapse">
+                        <span class="navicon navicon-white"></span>
+                    </button>
                     <a class="navbar-logo" href="//www.svcover.nl/"><img src="//cdl.svcover.nl/dist/v0.1/img/cover.png" alt="Cover"></a>
                     <a class="navbar-brand" href="/">PubliciTee</a>
                 </div>
                 <!-- Toggleable content -->
-                <div class="collapse navbar-collapse" id="navbar-demo-collapse">
+                <div class="collapse navbar-collapse" id="navbar-main-collapse">
                     <ul class="navbar-right">
                         <li class="<?= strtolower($page_id) === 'request' ? 'active' : '' ?>">
                             <a href="/">Request</a>
