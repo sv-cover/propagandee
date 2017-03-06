@@ -1,4 +1,7 @@
 <?php
+/**
+ * A set of functions to enable interaction with the Cover API
+ */
 
 if (!defined('COVER_API_URL'))
     define('COVER_API_URL', 'https://www.svcover.nl/api.php');
@@ -13,8 +16,44 @@ if (!defined('COVER_LOGOUT_URL'))
     define('COVER_LOGOUT_URL', 'https://www.svcover.nl/sessions.php?view=logout');
 
 
-function http_signed_request($app, $secret, $url, array $post = null, $timeout=30)
-{
+/** Reverse of php's parse_url */
+function http_build_url($parts){ 
+    return implode("", array(
+        isset($parts['scheme']) ? $parts['scheme'] . '://' : '',
+        isset($parts['user']) ? $parts['user'] : '',
+        isset($parts['pass']) ? ':' . $parts['pass']  : '',
+        (isset($parts['user']) || isset($parts['pass'])) ? "@" : '',
+        isset($parts['host']) ? $parts['host'] : '',
+        isset($parts['port']) ? ':' . intval($parts['port']) : '',
+        isset($parts['path']) ? $parts['path'] : '',
+        isset($parts['query']) ? '?' . $parts['query'] : '',
+        isset($parts['fragment']) ? '#' . $parts['fragment'] : ''
+    ));
+}
+
+
+/** Inject arguments into http url */
+function http_inject_url($url, array $data){
+    // Parse the url
+    $url_parts = parse_url($url);
+
+    // Explicitly parse the query part as well
+    if (isset($url_parts['query']))
+        parse_str($url_parts['query'], $url_query);
+    else
+        $url_query = array();
+
+    // Splice in the token authentication
+    $url_query = array_merge($data, $url_query);
+
+    // Rebuild the url
+    $url_parts['query'] = http_build_query($url_query);
+    return http_build_url($url_parts);
+}
+
+
+/** Perform a signed http request */
+function http_signed_request($app, $secret, $url, array $post = null, $timeout=30){
     $body = $post !== null ? http_build_query($post) : '';
 
     $checksum = sha1($body . $secret);
@@ -42,8 +81,9 @@ function http_signed_request($app, $secret, $url, array $post = null, $timeout=3
     return file_get_contents($url, false, $context);
 }
 
-function http_get_json($url, array $data = null)
-{   
+
+/** Get JSON via a signed http request*/
+function http_get_json($url, array $data = null){   
     if ($data !== null)
         $url = http_inject_url($url, $data);
 
@@ -60,8 +100,9 @@ function http_get_json($url, array $data = null)
     return $data;
 }
 
-function get_cover_session()
-{
+
+/** Get Cover session data if member is logged in and login is valid*/
+function get_cover_session(){
     static $session = null;
 
     // Is there a cover website global session id available?
@@ -87,43 +128,34 @@ function get_cover_session()
         : false;
 }
 
-function cover_session_logged_in()
-{
+
+/** Check if member is logged in and login is valid */
+function cover_session_logged_in(){
     return get_cover_session() !== false;
 }
 
+
+/** Create url to Cover Session management with return field */
 function cover_session_url($url, $next_url=null, $next_field='referrer'){
     if ($next_url === null)
         $next_url = SERVER_NAME.$_SERVER['REQUEST_URI'];
     return http_inject_url($url, array($next_field => $next_url));
 }
 
+/** Create url to Cover Login with return field */
 function cover_login_url($next_url=null){
     return cover_session_url(COVER_LOGIN_URL, $next_url);
 }
 
 
+/** Create url to Cover Logout with return field */
 function cover_logout_url($next_url=null){
     return cover_session_url(COVER_LOGOUT_URL, $next_url);
 }
 
-function cover_session_status()
-{
-    $session = get_cover_session();
 
-    if (!$session)
-        $content = sprintf('<a class="button" href="%s">Log in</a>', cover_login_url());
-    else
-        $content = sprintf('Logged in as %s. <a class="button" href="%s">Log out</a>', 
-            $session->voornaam, 
-            cover_logout_url()
-            );
-
-    return sprintf('<div class="session">%s</div>', $content);
-}
-
-function cover_session_get_committees()
-{
+/** Get of which the logged in member is part */
+function cover_session_get_committees(){
     static $committees;
 
     if ($committees !== null)
@@ -137,14 +169,16 @@ function cover_session_get_committees()
     return $committees = array_keys((array) get_cover_session()->committees);
 }
 
-function cover_session_in_committee($committee)
-{
+
+/** Check if logged in member is in a committee */
+function cover_session_in_committee($committee){
     return in_array(strtolower($committee), cover_session_get_committees());
 }
 
-function cover_get_json($method, array $data = array(), $use_session = true)
-{
-    if ($use_session && get_cover_session() && !isset($data['session_id']))
+
+/** Get JSON from Cover API with session id */
+function cover_get_json($method, array $data = array(), $use_session = true){
+    if ($use_session && cover_session_logged_in() && !isset($data['session_id']))
         $data['session_id'] = $_COOKIE[COVER_COOKIE_NAME];
 
     $data['method'] = $method;

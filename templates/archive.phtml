@@ -4,7 +4,7 @@
         <ul class="nav nav-tabs">
             <?php foreach ($index as $folder): ?>
                 <li class="<?php if(strpos($path, $folder['path']) === 0) echo 'active'; ?>" role="presentation">
-                    <a href="?path=<?= urlencode($folder['path']) ?>"><?= $folder['basename'] ?></a>
+                    <a href="?path=<?= urlencode($folder['path']) ?>"><?= escape($folder['basename']) ?></a>
                 </li>
             <?php endforeach ?>
         </ul>
@@ -15,14 +15,14 @@
                 <li>
                     <a href="?poster=<?= urlencode($item['path']) ?>" target="_blank" class="poster">
                         <img src="?poster=<?= urlencode($item['path']) ?>&view=thumbnail" alt=".<?= $item['extension'] ?>-file">
-                        <span class="name"><?= $item['filename'] ?></span>
+                        <span class="name"><?= escape($item['filename']) ?></span>
                     </a>
                 </li>
             <?php else: ?>
                 <li>
                     <a href="?path=<?= urlencode($item['path']) ?>" class="folder">
                         <span class="icon"><i class="fa fa-folder-open-o" aria-hidden="true"></i></span>
-                        <span class="name"><?= $item['basename'] ?></span>                        
+                        <span class="name"><?= escape($item['basename']) ?></span>                        
                     </a>
                 </li>
             <?php endif ?>

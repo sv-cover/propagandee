@@ -29,7 +29,7 @@
                             <a href="/archive.php">Archive</a>
                         </li>
                         <!-- Dropdown menu -->
-                        <?php if(!get_cover_session()): ?>
+                        <?php if(!cover_session_logged_in()): ?>
                             <li><a href="<?= cover_login_url() ?>">Log in</a></li>
                         <?php else: ?>
                             <li class="dropdown">
@@ -37,7 +37,7 @@
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                                 <ul class="dropdown-menu">
-                                    <li class="dropdown-header">Logged in as <?= get_cover_session()->voornaam ?></li>
+                                    <li class="dropdown-header">Logged in as <?= escape(get_cover_session()->voornaam) ?></li>
                                     <li><a href="<?= cover_logout_url() ?>">Logout</a></li>
                                 </ul>
                             </li>
