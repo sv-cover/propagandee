@@ -92,8 +92,10 @@ class PosterRequestView extends TemplateView
         $fp = fopen($filename, 'a');
         
         // Create log header
-        fwrite($fp, "\n----------------------------------------------\n");
-        fwrite($fp, sprintf("Poster request filed at %s\n", date(DATE_ATOM)));
+        fwrite($fp, "\n----------------------------------------------\nPOSTER REQUEST\n----------------------------------------------\n");
+        fwrite($fp, sprintf("Timestamp: %s\n", date(DATE_ATOM)));
+        fwrite($fp, sprintf("IP address: %s\n", $_SERVER['REMOTE_ADDR']));
+        fwrite($fp, sprintf("Member ID: %s \n\n", cover_session_logged_in() ? get_cover_session()->id : 'null'));
         
         // Log all fields in the form
         foreach ($this->form->fields as $name => $field)
