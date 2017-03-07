@@ -102,6 +102,7 @@ class PosterRequestView extends TemplateView
         // Log email result
         fwrite($fp, sprintf("Result: %s\n", $this->result));
         fclose($fp);
+        chgrp($filename, LINUX_GROUP_NAME);
     }
 }
 

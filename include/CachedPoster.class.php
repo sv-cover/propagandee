@@ -91,8 +91,10 @@ class CachedPoster
         $filename = $this->get_cached_path($width, $height);
 
         // Make sure output directory exists
-        if (!file_exists(dirname($filename)))
+        if (!file_exists(dirname($filename))){
             mkdir(dirname($filename), 0777, true);
+            chgrp(dirname($filename), LINUX_GROUP_NAME);
+        }
 
         // Write image to cache
         $imagick->setColorspace(Imagick::COLORSPACE_SRGB);
@@ -100,6 +102,8 @@ class CachedPoster
         $imagick->writeImage( $filename );
         $imagick->destroy();
         
+        chgrp($filename, LINUX_GROUP_NAME);
+
         // Send cached image to client
         return $this->view_cached($width, $height);
     }
