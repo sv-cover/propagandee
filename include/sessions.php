@@ -61,20 +61,23 @@ function http_signed_request($app, $secret, $url, array $post = null, $timeout=3
     $headers = "X-App: ". $app. "\r\n".
               "X-Hash: ". $checksum . "\r\n";
 
-    $options = array(
-        'http' => $post !== null
-            ? array(
+    if ($post !== null)
+        $options = [
+            'http' => [
                 'header'  => $headers."Content-type: application/x-www-form-urlencoded\r\n",
                 'timeout' => $timeout,
                 'method'  => 'POST',
                 'content' => $body
-                )
-            : array(
+            ]
+        ];
+    else
+        $options = [ 
+            'http' => [
                 'header'  => $headers,
                 'timeout' => $timeout,
                 'method'  => 'GET'
-                )
-        );
+            ] 
+        ];
 
     $context = stream_context_create($options);
 
@@ -111,7 +114,7 @@ function get_cover_session(){
 
     // If not, bail out. I have no place else to look :(
     else
-        return false;
+        return null;
 
     if ($session !== null)
         return $session;
@@ -125,13 +128,13 @@ function get_cover_session(){
 
     return $session = !empty($response->result)
         ? $response->result
-        : false;
+        : null;
 }
 
 
 /** Check if member is logged in and login is valid */
 function cover_session_logged_in(){
-    return get_cover_session() !== false;
+    return get_cover_session() !== null;
 }
 
 
