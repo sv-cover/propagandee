@@ -20,7 +20,7 @@
 
     <p>
         Activity:
-        <?php if (isset($activity) && !empty($activity)): ?>
+        <?php if (isset($activity) && !empty($activity) && $activity !== 'other'): ?>
             <a href="https://www.svcover.nl/agenda.php?agenda_id=<?= escape($activity) ?>">
                 <?= escape($activity_name) ?>    
             </a>
