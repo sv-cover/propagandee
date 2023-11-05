@@ -99,7 +99,7 @@ class CachedPoster
             chgrp(dirname($filename), LINUX_GROUP_NAME);
         }
 
-        // error_log($imagick->getImageColorspace() == Imagick::COLORSPACE_CMYK);
+        // Convert colour profile if needed
         if ($imagick->getImageColorspace() == Imagick::COLORSPACE_CMYK) {
             $profiles = $imagick->getImageProfiles('*', false);
 
