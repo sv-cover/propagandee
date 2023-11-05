@@ -4,10 +4,10 @@ define('CACHE_ROOT', '/absolute/path/to/cache');
 
 define('SUBMISSION_LOG', '/path/to/poster_requests.log');
 
-define('EMAIL_SENDER', 'PubliciTee <publicitee@svcover.nl>');
+define('EMAIL_SENDER', 'PropaganDee <propagandee@svcover.nl>');
 
 define('LINUX_GROUP_NAME', '');
 
-define('SERVER_NAME', 'https://publicitee.svcover.nl');
-define('COVER_APP', 'PubliciTee');
+define('SERVER_NAME', 'https://propagandee.svcover.nl');
+define('COVER_APP', 'PropaganDee');
 define('COVER_SECRET', '');
